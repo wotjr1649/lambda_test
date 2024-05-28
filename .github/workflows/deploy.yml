@@ -32,6 +32,7 @@ jobs:
     - name: Package dependencies for AWS Lambda layer
       run: |
         mkdir python
+        cp -r app/* python/  # app 폴더의 내용을 python 폴더에 복사
         . venv/bin/activate
         pip install -r requirements.txt -t python
         deactivate
