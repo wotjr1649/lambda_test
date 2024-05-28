@@ -13,24 +13,9 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: 3.11
-
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install fastapi
-        pip install mangum
-
     - name: Package FastAPI app
       run: |
-        mkdir -p package
-        cp -r app/* package/
-        cp lambda_function.py package/
-        cd package
-        zip -r ../function.zip .
+        zip -r function.zip app lambda_function.py
 
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
@@ -42,4 +27,4 @@ jobs:
     - name: Deploy to AWS Lambda
       run: |
         aws lambda update-function-code --function-name lambda-test2 --zip-file fileb://function.zip
-        aws lambda update-function-configuration --function-name lambda-test2 --layers arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6
+        aws lambda update-function-configuration --function-name lambda-test2 --layers arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6 arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-mangum:3
