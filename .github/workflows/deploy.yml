@@ -56,5 +56,5 @@ jobs:
 
     - name: Run API Gateway update script
       run: |
-        chmod +x ./update_api_gateway.sh
-        ./update_api_gateway.sh
+        chmod +x ./register_api.sh
+        ./register_api.sh
