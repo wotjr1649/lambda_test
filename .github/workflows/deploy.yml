@@ -41,5 +41,5 @@ jobs:
 
     - name: Deploy to AWS Lambda
       run: |
-        aws lambda update-function-code --function-name your-lambda-function-name --zip-file fileb://function.zip
-        aws lambda update-function-configuration --function-name your-lambda-function-name --layers arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6
+        aws lambda update-function-code --function-name lambda-test2 --zip-file fileb://function.zip
+        aws lambda update-function-configuration --function-name lambda-test2 --layers arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6
