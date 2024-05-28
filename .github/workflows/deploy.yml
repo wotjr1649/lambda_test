@@ -17,6 +17,27 @@ jobs:
       run: |
         zip -r function.zip app lambda_function.py
 
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        . venv/bin/activate
+        pip install -r requirements.txt
+        deactivate
+
+    - name: Package dependencies for AWS Lambda layer
+      run: |
+        mkdir python
+        . venv/bin/activate
+        pip install -r requirements.txt -t python
+        deactivate
+        zip -r dependencies.zip python
+        rm -rf python
+
     - name: Configure AWS credentials
       uses: aws-actions/configure-aws-credentials@v1
       with:
@@ -24,7 +45,12 @@ jobs:
         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
         aws-region: ap-northeast-2
 
-    - name: Deploy to AWS Lambda
+    - name: Deploy FastAPI app to AWS Lambda
       run: |
         aws lambda update-function-code --function-name lambda-test2 --zip-file fileb://function.zip
-        aws lambda update-function-configuration --function-name lambda-test2 --layers arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6 arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-mangum:3
+
+    - name: Deploy dependencies to AWS Lambda layer
+      run: |
+        aws lambda publish-layer-version --layer-name fastapi-dependencies --zip-file fileb://dependencies.zip --compatible-runtimes python3.11
+        aws lambda update-function-configuration --function-name lambda-test2 --layers arn:aws:lambda:ap-northeast-2:767397715593:layer:fastapi-dependencies:1
+        arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6 arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-mangum:3
