@@ -54,3 +54,10 @@ jobs:
         aws lambda publish-layer-version --layer-name fastapi-dependencies --zip-file fileb://dependencies.zip --compatible-runtimes python3.11
         aws lambda update-function-configuration --function-name lambda-test2 --layers "arn:aws:lambda:ap-northeast-2:767397715593:layer:fastapi-dependencies:1" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-Pillow:4" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-pydantic:7"
 
+    - name: Update existing HTTP API Gateway
+      run: |
+        http_api_id=xhoazt7th9
+        aws apigatewayv2 update-integration --api-id $http_api_id --integration-id $(aws apigatewayv2 get-integrations --api-id $http_api_id --query 'Items[0].IntegrationId' --output text) --integration-uri arn:aws:apigateway:ap-northeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-2:${{ secrets.AWS_ACCOUNT_ID }}:function:lambda-test2/invocations
+        aws lambda add-permission --function-name lambda-test2 --statement-id apigateway-test-2 --action lambda:InvokeFunction --principal apigateway.amazonaws.com --source-arn arn:aws:execute-api:ap-northeast-2:${{ secrets.AWS_ACCOUNT_ID }}:$http_api_id/*
+        echo "HTTP API Gateway URL: https://$http_api_id.execute-api.ap-northeast-2.amazonaws.com"
+
