@@ -6,18 +6,19 @@ from fastapi.exception_handlers import (
     request_validation_exception_handler,
 )
 from fastapi.exceptions import RequestValidationError
-from starlette.middleware.cors import CORSMiddleware
-from starlette.middleware import Middleware
-from routes import host_routers, hosting_routers, login_routers, sports_crawl_routers
 from starlette.exceptions import HTTPException as StarletteHTTPException
+from starlette.middleware import Middleware
+from starlette.middleware.cors import CORSMiddleware
 
-middleware = [Middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],)
-    ]
+middleware = [
+    Middleware(
+        CORSMiddleware,
+        allow_origins=["*"],
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+]
 
 # FastAPI
 app = FastAPI(middleware=middleware)
@@ -33,13 +34,6 @@ async def custom_http_exception_handler(request, exc):
 async def validation_exception_handler(request, exc):
     print(f"OMG! The client sent invalid data!: {exc}")
     return await request_validation_exception_handler(request, exc)
-
-
-# 라우터 등록
-app.include_router(login_routers, prefix="/login")
-app.include_router(host_routers, prefix="/host")
-app.include_router(hosting_routers, prefix="/hosting")
-app.include_router(sports_crawl_routers, prefix="/schedule")
 
 
 @app.get("/")
