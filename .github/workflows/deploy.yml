@@ -58,12 +58,12 @@ jobs:
       run: |
         http_api_id=$(aws apigatewayv2 get-apis --query 'Items[?Name==`lambda-test2-http-api`].ApiId' --output text)
         if [ -z "$http_api_id" ]; then
-          http_api_id=$(aws apigatewayv2 create-api --name lambda-test2-http-api --protocol-type HTTP --target $(aws lambda get-function --function-name lambda-test2 --query 'Configuration.FunctionArn' --output text) --query 'ApiId' --output text)
-          aws apigatewayv2 create-route --api-id $http_api_id --route-key 'ANY /{proxy+}' --target "integrations/$(aws apigatewayv2 create-integration --api-id $http_api_id --integration-type AWS_PROXY --integration-uri arn:aws:apigateway:ap-northeast-2:lambda:path/2015-03-31/functions/$(aws lambda get-function --function-name lambda-test2 --query 'Configuration.FunctionArn' --output text)/invocations --payload-format-version 2.0 --query 'IntegrationId' --output text)"
-          aws apigatewayv2 create-deployment --api-id $http_api_id --stage-name prod
+          http_api_id=$(aws apigatewayv2 create-api --name lambda-test2-http-api --protocol-type HTTP --query 'ApiId' --output text)
+          aws apigatewayv2 create-stage --api-id $http_api_id --stage-name prod --auto-deploy
+          integration_id=$(aws apigatewayv2 create-integration --api-id $http_api_id --integration-type AWS_PROXY --integration-uri arn:aws:apigateway:ap-northeast-2:lambda:path/2015-03-31/functions/$(aws lambda get-function --function-name lambda-test2 --query 'Configuration.FunctionArn' --output text)/invocations --payload-format-version 2.0 --query 'IntegrationId' --output text)
+          aws apigatewayv2 create-route --api-id $http_api_id --route-key 'ANY /{proxy+}' --target "integrations/$integration_id"
         else
           aws apigatewayv2 update-api --api-id $http_api_id --name lambda-test2-http-api --protocol-type HTTP --target $(aws lambda get-function --function-name lambda-test2 --query 'Configuration.FunctionArn' --output text)
-          aws apigatewayv2 create-deployment --api-id $http_api_id --stage-name prod
         fi
         aws lambda add-permission --function-name lambda-test2 --statement-id apigateway-test2 --action 'lambda:InvokeFunction' --principal apigateway.amazonaws.com --source-arn "arn:aws:execute-api:ap-northeast-2:*:$http_api_id/*/*/*"
 
