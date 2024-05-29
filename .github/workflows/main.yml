@@ -34,6 +34,6 @@ jobs:
           echo "Route ANY /{proxy+} already exists, skipping creation."
         fi
 
-    - name: Deploy API Gateway Stage
+   - name: Update API Gateway Stage
       run: |
-        aws apigatewayv2 create-stage --api-id nkg2365i5f --stage-name "dev" --auto-deploy || echo "Stage dev already exists, skipping creation."
+        aws apigatewayv2 update-stage --api-id nkg2365i5f --stage-name "$default" --auto-deploy || echo "Stage dev already exists, skipping creation."
