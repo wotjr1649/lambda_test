@@ -36,4 +36,4 @@ jobs:
 
    - name: Update API Gateway Stage
       run: |
-        aws apigatewayv2 update-stage --api-id nkg2365i5f --stage-name "$default" --auto-deploy || echo "Stage dev already exists, skipping creation."
+        aws apigatewayv2 update-stage --api-id nkg2365i5f --stage-name "$default" --auto-deploy
