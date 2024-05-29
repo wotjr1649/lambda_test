@@ -28,3 +28,7 @@ jobs:
     - name: Create API Gateway Route
       run: |
         aws apigatewayv2 create-route --api-id nkg2365i5f --route-key "ANY /{proxy+}" --target integrations/${{ env.INTEGRATION_ID }}
+
+    - name: Deploy API Gateway Stage
+      run: |
+        aws apigatewayv2 create-stage --api-id nkg2365i5f --stage-name "dev" --auto-deploy
