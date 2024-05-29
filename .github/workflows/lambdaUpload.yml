@@ -48,7 +48,7 @@ jobs:
 
     - name: Deploy FastAPI app to AWS Lambda
       run: |
-        aws lambda update-function-code --function-name proxytest --zip-file fileb://function.zip
+        aws lambda update-function-code --function-name tttt --zip-file fileb://function.zip
 
     - name: Delete previous layer versions
       run: |
@@ -60,4 +60,4 @@ jobs:
     - name: Deploy dependencies to AWS Lambda layer
       run: |
         layer_version=$(aws lambda publish-layer-version --layer-name fastapi-dependencies --zip-file fileb://dependencies.zip --compatible-runtimes python3.11 --query 'LayerVersionArn' --output text) && \
-        aws lambda update-function-configuration --function-name proxytest --layers "$layer_version" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-Pillow:4" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-pydantic:7"
+        aws lambda update-function-configuration --function-name tttt --layers "$layer_version" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-Pillow:4" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-pydantic:7"

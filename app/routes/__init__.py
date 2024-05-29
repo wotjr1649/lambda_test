@@ -8,19 +8,13 @@ from routes.host import (
     store_update_route,
     store_delete_route,
 )
-from routes.hosting import (
-    hosting_create_route, 
-    hosting_read_tables_route, 
-    hosting_read_table_route,
-    hosting_delete_table_route,
-    store_input_image)
+from routes.hosting import hosting_create_route, hosting_read_tables_route, hosting_read_table_route
 from routes.login import login_route, login_token_route
-from routes.mainpage import mainpage_hosting_read_route
+
 login_routers = APIRouter(tags=["Login"])
 host_routers = APIRouter(tags=["Host"])
 hosting_routers = APIRouter(tags=["Hosting"])
 sports_crawl_routers = APIRouter(tags=["SportsSchedule"])
-mainpage_routers = APIRouter(tags=["Mainpage"])
 
 host_routers.routes.append(auth_bussiness_num_route)
 host_routers.routes.append(search_store_route)
@@ -34,10 +28,6 @@ login_routers.routes.append(login_token_route)
 hosting_routers.routes.append(hosting_create_route)
 hosting_routers.routes.append(hosting_read_tables_route)
 hosting_routers.routes.append(hosting_read_table_route)
-hosting_routers.routes.append(hosting_delete_table_route)
-hosting_routers.routes.append(store_input_image)
-
-mainpage_routers.routes.append(mainpage_hosting_read_route)
 
 sports_crawl_routers.routes.append(esports_schedule_route)
 sports_crawl_routers.routes.append(sports_schedule_route)
