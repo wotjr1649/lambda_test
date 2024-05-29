@@ -48,23 +48,16 @@ jobs:
 
     - name: Deploy FastAPI app to AWS Lambda
       run: |
-        aws lambda update-function-code --function-name test2 --zip-file fileb://function.zip
+        aws lambda update-function-code --function-name proxytest --zip-file fileb://function.zip
+
+    - name: Delete previous layer versions
+      run: |
+        layer_versions=$(aws lambda list-layer-versions --layer-name fastapi-dependencies --query 'LayerVersions[].Version' --output text)
+        for version in $layer_versions; do
+          aws lambda delete-layer-version --layer-name fastapi-dependencies --version-number $version
+        done
 
     - name: Deploy dependencies to AWS Lambda layer
       run: |
         layer_version=$(aws lambda publish-layer-version --layer-name fastapi-dependencies --zip-file fileb://dependencies.zip --compatible-runtimes python3.11 --query 'LayerVersionArn' --output text) && \
-        aws lambda update-function-configuration --function-name test2 --layers "$layer_version" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-Pillow:4" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-pydantic:7"
-
-    - name: Create API Gateway Integration
-      run: |
-        integration_id=$(aws apigatewayv2 create-integration --api-id nkg2365i5f --integration-type "AWS_PROXY" --integration-uri arn:aws:apigateway:ap-northeast-2:lambda:path/2015-03-31/functions/arn:aws:lambda:ap-northeast-2:${{ secrets.AWS_ACCOUNT_ID }}:function:test2/invocations --payload-format-version "2.0" --query 'IntegrationId' --output text)
-        echo "INTEGRATION_ID=$integration_id" >> $GITHUB_ENV
-
-    - name: Create API Gateway Route
-      run: |
-        route_exists=$(aws apigatewayv2 get-routes --api-id nkg2365i5f --query "Items[?RouteKey=='ANY /{proxy+}'].RouteId" --output text)
-        if [ -z "$route_exists" ]; then
-          aws apigatewayv2 create-route --api-id nkg2365i5f --route-key "ANY /{proxy+}" --target integrations/${{ env.INTEGRATION_ID }}
-        else
-          echo "Route ANY /{proxy+} already exists, skipping creation."
-        fi
+        aws lambda update-function-configuration --function-name proxytest --layers "$layer_version" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-fastapi:6" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-Pillow:4" "arn:aws:lambda:ap-northeast-2:770693421928:layer:Klayers-p311-pydantic:7"
